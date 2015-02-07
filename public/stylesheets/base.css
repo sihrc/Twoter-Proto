@@ -1,0 +1,42 @@
+div.mainList {
+    float:left;
+    padding:20px;
+}
+
+div.rightList {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:300px;
+    width:300px;
+    float:right;
+    padding:20px;
+}
+
+div.navBar {
+    background-color:gray;
+    color:black;
+    text-align:right;
+    padding:5px;
+}
+
+form#login {
+    padding:10px;
+}
+
+a.toogleUser {
+    background: #ccc;
+    cursor: pointer;
+    border-top: solid 2px #eaeaea;
+    border-left: solid 2px #eaeaea;
+    border-bottom: solid 2px #777;
+    border-right: solid 2px #777;
+    padding: 5px 5px;
+}
+
+.toggleUserDown {
+    background: #bbb;
+    border-top: solid 2px #777;
+    border-left: solid 2px #777;
+    border-bottom:solid 2px  #eaeaea;
+    border-right: solid 2px #eaeaea;
+}

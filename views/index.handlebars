@@ -1,0 +1,32 @@
+<div id = "header" class = "navBar">
+    <button id = "logout"> {{message}}. Click to Logout! </button>
+</div>
+
+<div id = "twoteList" class = "mainList">
+    <h1> Twotes </h1>
+    <form id = "addTwote" action = "/addTwote" method = "POST">
+        <input id = "messageInput" type = "text"/>
+        <input type = "submit" action = "submit" value = "Post"/>
+    </form>
+    <br>signed in as: {{author}}<br>
+    <div id = "list">
+        <br>
+        {{#each twotes}}
+        <div class = "{{this.authorId}}" id = "{{this._id}}">
+            {{this.author}} @ {{this.displayTime}}<br>
+            &nbsp;&nbsp;&nbsp; {{this.message}}<br><br>
+            {{#equal ../id this.authorId}}
+                <button id = {{this._id}} class = "deleteTwote"> Delete </button>
+            {{/equal}}
+        </div>
+        {{/each}}
+    </div>
+</div>
+
+<div id = "peopleList" class = "rightList">
+    <h2> Users </h2>
+    <br>
+    {{#each people}}
+        <a id="{{this.id}}" class = "toggleUser" title="button">{{this.name}}</a><br>
+    {{/each}}
+</div>

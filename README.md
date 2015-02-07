@@ -1,5 +1,3 @@
-# Node-Template
-A starter template for node.js web-apps
+# Twoter Proto
 
-## Usage
-Fork it, clone it, and go to town.
+Twoter spin off
