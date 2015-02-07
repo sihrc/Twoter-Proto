@@ -6,7 +6,9 @@ var people_schema = mongoose.Schema({
 
 var twote_schema = mongoose.Schema({
       timestamp:    Number
+    , displayTime:  String
     , author:       String
+    , authorId:     String
     , message:      String
 });
 

@@ -13,7 +13,7 @@ var base = require('./routes/base');
 
 // Config
 var app = express();
-var mongoURI = process.env.MONGOURI || "mongodb://localhost/test";
+var mongoURI = process.env.MONGOURI || "mongodb://localhost/twoter";
 var PORT = process.env.PORT || 3000;
 mongoose.connect(mongoURI);
 
@@ -43,6 +43,7 @@ app.get('/', base.home);
 
 // POSTS
 app.post('/login', base.login);
+app.post('/addTwote', base.addTwote);
 
 // Listen
 app.listen(PORT);

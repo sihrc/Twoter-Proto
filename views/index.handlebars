@@ -5,14 +5,16 @@
 <div id = "twoteList" class = "mainList">
     <h1> Twotes </h1>
     <form id = "addTwote" action = "/addTwote" method = "POST">
-        <input id = "messageInput" type = "text" value = "Enter a Message ..."/>
+        <input id = "messageInput" type = "text"/>
         <input type = "submit" action = "submit" value = "Post"/>
     </form>
-    <br>
-    {{#each twotes}}
-        {{this.author}}<br>
-        &nbsp;&nbsp;&nbsp; {{this.message}}<br><br>
-    {{/each}}
+    <div id = "list">
+        <br>
+        {{#each twotes}}
+            {{this.author}} @ {{this.displayTime}}<br>
+            &nbsp;&nbsp;&nbsp; {{this.message}}<br><br>
+        {{/each}}
+    </div>
 </div>
 
 <div id = "peopleList" class = "rightList">

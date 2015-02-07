@@ -1,15 +1,28 @@
 var schema = require('../models/schema')
 
+/** Helper to get Timestamp **/
+var getTime = function () {
+    var currentdate = new Date();
+    return currentdate.getDate() + "/"
+                    + (currentdate.getMonth()+1)  + "/"
+                    + currentdate.getFullYear() + " @ "
+                    + currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+};
+
 //GETS
 
 var home = function (req, res) {
-    schema.Person.find({}, function (people_, err1) {
+    schema.Person.find({}, null, {sort: {name: 1}}, function (err1, people_) {
         if (err1) {
             res.status(500).json({error: "Could not load users. \n" + err1})
+            return;
         }
-        schema.Twote.find({}, function (twotes_, err2) {
+        schema.Twote.find({}, null, {sort: {timestamp: -1}}, function (err2, twotes_) {
             if (err2) {
                 res.status(500).json({error: "Could not load twotes. \n" + err2})
+                return;
             }
             var pageData = {
                   people: people_
@@ -25,8 +38,31 @@ var home = function (req, res) {
 // POSTS
 
 var login = function (req, res) {
-    res.render('index');
-}
+    schema.Person({name: req.body.username}).save(function (err, data) {
+        req.session.user = data._id;
+        req.session.username = req.body.username ? req.body.username : "NewUser";
+        res.redirect("/")
+    });
+};
+
+var addTwote = function (req, res) {
+    schema.Twote({
+          timestamp: new Date().getTime()
+        , displayTime: getTime()
+        , author: req.session.username
+        , authorId: req.session.user
+        , message: req.body.message
+    }).save(function (err, data) {
+        console.log(err);
+        console.log(data);
+        if (err) {
+            res.status(500).json({error: "Could not add Twote, " + err});
+            return;
+        }
+
+        res.json(data);
+    });
+};
 
 /* Wraps the function in session checker */
 var sessionWrapper = function (func) {
@@ -35,7 +71,6 @@ var sessionWrapper = function (func) {
             req.session.counter++;
             req.body.message = "Hello again! Thanks for visiting " + req.session.counter + " times";
         } else {
-            message = "Hello, thanks for visiting this site!";
             req.session.counter = 1;
             res.render('login', {});
             return;
@@ -43,7 +78,10 @@ var sessionWrapper = function (func) {
 
         func(req, res);
     };
-}
+};
+
+
 
 exports.home = sessionWrapper(home);
-exports.home = login;
+exports.login = login;
+exports.addTwote = addTwote;
