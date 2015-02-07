@@ -8,6 +8,18 @@
     <link rel="stylesheet" href="/stylesheets/base.css">
 
 	<title>Twoter</title>
+<script src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars.runtime-v2.0.0.js"></script>
+<script>
+Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
+    if (arguments.length < 3)
+        throw new Error("Handlebars Helper equal needs 2 parameters");
+    if( lvalue!=rvalue ) {
+        return options.inverse(this);
+    } else {
+        return options.fn(this);
+    }
+});
+</script>
 
   </head>
   <body>

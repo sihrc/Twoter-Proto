@@ -28,6 +28,8 @@ var home = function (req, res) {
                   people: people_
                 , twotes: twotes_
                 , message: req.body.message
+                , author: req.session.username
+                , id: req.session.user
             };
 
             res.render('index', pageData);
@@ -38,12 +40,31 @@ var home = function (req, res) {
 // POSTS
 
 var login = function (req, res) {
-    schema.Person({name: req.body.username}).save(function (err, data) {
-        req.session.user = data._id;
-        req.session.username = req.body.username ? req.body.username : "NewUser";
-        res.redirect("/")
+    schema.Person.find({name: req.body.username}, function (err, exist) {
+        if (err || exist.length) {
+            res.render('login', {message: err ? err : "Name already exists!"});
+        } else {
+            schema.Person({name: req.body.username}).save(function (err, data) {
+                req.session.user = data._id;
+                req.session.username = req.body.username ? req.body.username : "NewUser";
+                res.redirect("/");
+            });
+        }
     });
 };
+
+var logout = function (req, res) {
+    req.session.destroy();
+    res.status(200).json({logout: true});
+}
+
+var delete_ = function (req, res) {
+    schema.Twote.remove({}, function(Err) {
+        schema.Person.remove({}, function(Err) {
+            res.redirect('/');
+        });
+    });
+}
 
 var addTwote = function (req, res) {
     schema.Twote({
@@ -53,8 +74,6 @@ var addTwote = function (req, res) {
         , authorId: req.session.user
         , message: req.body.message
     }).save(function (err, data) {
-        console.log(err);
-        console.log(data);
         if (err) {
             res.status(500).json({error: "Could not add Twote, " + err});
             return;
@@ -64,10 +83,21 @@ var addTwote = function (req, res) {
     });
 };
 
+var deleteTwote = function (req, res) {
+    console.log(req.body.id);
+    schema.Twote.remove({_id: req.body.id}, function (err) {
+        if (err) {
+            res.status(500).json({error: "Could not delete Twote, " + err});
+        } else {
+            res.status(200).json({success: true});
+        }
+    });
+}
+
 /* Wraps the function in session checker */
 var sessionWrapper = function (func) {
     return function (req, res) {
-        if (req.session.counter) {
+        if (req.session.username && req.session.user) {
             req.session.counter++;
             req.body.message = "Hello again! Thanks for visiting " + req.session.counter + " times";
         } else {
@@ -84,4 +114,7 @@ var sessionWrapper = function (func) {
 
 exports.home = sessionWrapper(home);
 exports.login = login;
+exports.logout = logout;
 exports.addTwote = addTwote;
+exports.delete_ = delete_;
+exports.deleteTwote = deleteTwote;
