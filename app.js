@@ -7,6 +7,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 var hbs = exphbs.create({
       defaultLayout: 'base'
     , partialsDir: __dirname + '/views/partials'
@@ -49,6 +51,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+// passport config
+// var Account = require('./models/account');
+// passport.use(new LocalStrategy(Account.authenticate()));
+// passport.serializeUser(Account.serializeUser());
+// passport.deserializeUser(Account.deserializeUser());
 
 // Routing Table
 app.get('/', base.home);

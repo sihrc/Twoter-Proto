@@ -1,5 +1,5 @@
-var schema = require('../models/schema')
-
+var Twote = require('../models/twote').Twote;
+var Account = require('../models/account');
 /** Helper to get Timestamp **/
 var getTime = function () {
     var currentdate = new Date();
@@ -14,12 +14,12 @@ var getTime = function () {
 //GETS
 
 var home = function (req, res) {
-    schema.Person.find({}, null, {sort: {name: 1}}, function (err1, people_) {
+    Account.Person.find({}, null, {sort: {name: 1}}, function (err1, people_) {
         if (err1) {
             res.status(500).json({error: "Could not load users. \n" + err1})
             return;
         }
-        schema.Twote.find({}, null, {sort: {timestamp: -1}}, function (err2, twotes_) {
+        Twote.find({}, null, {sort: {timestamp: -1}}, function (err2, twotes_) {
             if (err2) {
                 res.status(500).json({error: "Could not load twotes. \n" + err2})
                 return;
@@ -40,11 +40,11 @@ var home = function (req, res) {
 // POSTS
 
 var login = function (req, res) {
-    schema.Person.find({name: req.body.username}, function (err, exist) {
+    Account.Person.find({name: req.body.username}, function (err, exist) {
         if (err || exist.length) {
             res.render('login', {message: err ? err : "Name already exists!"});
         } else {
-            schema.Person({name: req.body.username}).save(function (err, data) {
+            Account.Person({name: req.body.username}).save(function (err, data) {
                 req.session.user = data._id;
                 req.session.username = req.body.username ? req.body.username : "NewUser";
                 res.redirect("/");
@@ -59,15 +59,15 @@ var logout = function (req, res) {
 }
 
 var delete_ = function (req, res) {
-    schema.Twote.remove({}, function(Err) {
-        schema.Person.remove({}, function(Err) {
+    Twote.remove({}, function(Err) {
+        Account.Person.remove({}, function(Err) {
             res.redirect('/');
         });
     });
 }
 
 var addTwote = function (req, res) {
-    schema.Twote({
+    Twote({
           timestamp: new Date().getTime()
         , displayTime: getTime()
         , author: req.session.username
@@ -85,7 +85,7 @@ var addTwote = function (req, res) {
 
 var deleteTwote = function (req, res) {
     console.log(req.body.id);
-    schema.Twote.remove({_id: req.body.id}, function (err) {
+    Twote.remove({_id: req.body.id}, function (err) {
         if (err) {
             res.status(500).json({error: "Could not delete Twote, " + err});
         } else {
