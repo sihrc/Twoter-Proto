@@ -40,6 +40,7 @@ exports.local = new LocalStrategy(
             }
         });
     });
+
 exports.facebook = function(port) {
     return new FacebookStrategy({
         clientID: secrets.clientID,
@@ -51,9 +52,9 @@ exports.facebook = function(port) {
         }, function(err, user) {
             if (!user) {
                 schema.Person({
-                    username: "fbUser "
+                    username: "fbUser-"
                         + profile.name.givenName
-                        + ((profile.name.middleName) ? " " + profile.name.middlename + " " : " ")
+                        + ((profile.name.middleName) ? "-" + profile.name.middlename + "-" : "-")
                         + profile.name.familyName,
                     password: profile.id
                 }).save(function(err, user) {

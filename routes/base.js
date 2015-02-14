@@ -80,7 +80,6 @@ var addTwote = function (req, res) {
 };
 
 var deleteTwote = function (req, res) {
-    console.log(req.body.id);
     schema.Twote.remove({_id: req.body.id}, function (err) {
         if (err) {
             res.status(500).json({error: "Could not delete Twote, " + err});
@@ -93,7 +92,6 @@ var deleteTwote = function (req, res) {
 /* Wraps the function in session checker */
 var sessionWrapper = function (func) {
     return function (req, res) {
-        console.log(req.session);
         if (req.user) {
             req.session.counter++;
             req.body.message = "Hello again! Thanks for visiting " + req.session.counter + " times";
