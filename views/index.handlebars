@@ -1,5 +1,5 @@
 <div id = "header" class = "navBar">
-    <button id = "logout"> {{message}}. Click to Logout! </button>
+    <button id = "logout"> Hello {{this.author}}. Click to Logout! </button>
 </div>
 
 <div id = "twoteList" class = "mainList">
@@ -10,12 +10,12 @@
     </form>
     <br>signed in as: {{author}}<br>
     <div id = "list">
-        <br>
         {{#each twotes}}
-        <div class = "{{this.authorId}}" id = "{{this._id}}">
+        <br>
+        <div class = "{{this.author}}" id = "{{this._id}}">
             {{this.author}} @ {{this.displayTime}}<br>
             &nbsp;&nbsp;&nbsp; {{this.message}}<br><br>
-            {{#equal ../id this.authorId}}
+            {{#equal ../author this.author}}
                 <button id = {{this._id}} class = "deleteTwote"> Delete </button>
             {{/equal}}
         </div>
@@ -27,6 +27,6 @@
     <h2> Users </h2>
     <br>
     {{#each people}}
-        <a id="{{this.id}}" class = "toggleUser" title="button">{{this.name}}</a><br>
+        <a id="{{this.username}}" class = "toggleUser" title="button">{{this.username}}</a><br>
     {{/each}}
 </div>

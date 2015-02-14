@@ -1,14 +1,18 @@
 var mongoose = require('mongoose');
 
 var people_schema = mongoose.Schema({
-    name: String
+      username: String
+    , password: String
 });
+
+people_schema.methods.validPassword = function (pwd) {
+    return (this.password == pwd);
+}
 
 var twote_schema = mongoose.Schema({
       timestamp:    Number
     , displayTime:  String
     , author:       String
-    , authorId:     String
     , message:      String
 });
 
