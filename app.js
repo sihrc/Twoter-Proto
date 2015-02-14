@@ -28,21 +28,23 @@ var hbs = exphbs.create({
     }
 });
 
+// Variables
+var mongoURI = process.env.MONGOURI || "mongodb://localhost/twoter";
+mongoose.connect(mongoURI);
+var PORT = process.env.PORT || 3000;
 
 // Passport Configuration
 passport.serializeUser(auth.serialize);
 passport.deserializeUser(auth.deserialize);
 // Local Strategy
 passport.use(auth.local);
+passport.use(auth.facebook(PORT));
 
 // Route Imports
 var base = require('./routes/base');
 
 // Config
 var app = express();
-var mongoURI = process.env.MONGOURI || "mongodb://localhost/twoter";
-var PORT = process.env.PORT || 3000;
-mongoose.connect(mongoURI);
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
@@ -67,6 +69,13 @@ app.use(flash());
 app.get('/', base.home);
 app.get('/login', base.login);
 app.get('/delete', base.delete_);
+app.get('/auth/facebook', passport.authenticate('facebook'));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+          successRedirect: '/'
+        , failureRedirect: '/login'
+        , failureFlash: true
+    })
+);
 
 // POSTS
 // app.post('/login', base.login);

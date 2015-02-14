@@ -1,7 +1,7 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
 var secrets = require('./secrets.js');
-var schema = require('./models/schema')
+var schema = require('./models/schema');
 
 exports.serialize = function (user, done) {
     done(null, user);
@@ -40,17 +40,28 @@ exports.local = new LocalStrategy(
             }
         });
     });
-
-    // exports.facebook = function(port) {
-//     return new FacebookStrategy({
-//         clientID: secrets.clientID,
-//         clientSecret: secrets.clientSecret,
-//         callbackURL: "http://localhost:" + port + "/auth/facebook/callback"
-//     });
-// }
-
-// exports.facebook_callback = function(accessToken, refreshToken, profile, done) {
-//     process.nextTick(function() {
-//         return done(null, profile);
-//     });
-// };
+exports.facebook = function(port) {
+    return new FacebookStrategy({
+        clientID: secrets.clientID,
+        clientSecret: secrets.clientSecret,
+        callbackURL: "http://localhost:" + port + "/auth/facebook/callback"
+    }, function(accessToken, refreshToken, profile, done) {
+        schema.Person.findOne({
+            password: profile.id
+        }, function(err, user) {
+            if (!user) {
+                schema.Person({
+                    username: "fbUser "
+                        + profile.name.givenName
+                        + ((profile.name.middleName) ? " " + profile.name.middlename + " " : " ")
+                        + profile.name.familyName,
+                    password: profile.id
+                }).save(function(err, user) {
+                    return done(null, user);
+                });
+            } else {
+                return done(null, user);
+            }
+        });
+    });
+};
