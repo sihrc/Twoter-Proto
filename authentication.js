@@ -1,7 +1,10 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
-var secrets = require('./secrets.js');
 var schema = require('./models/schema');
+
+if (!process.env.facebookID) {
+    var secrets = require('./secrets.js');
+}
 
 exports.serialize = function (user, done) {
     done(null, user);
@@ -43,9 +46,9 @@ exports.local = new LocalStrategy(
 
 exports.facebook = function(port) {
     return new FacebookStrategy({
-        clientID: secrets.clientID,
-        clientSecret: secrets.clientSecret,
-        callbackURL: "http://localhost:" + port + "/auth/facebook/callback"
+        clientID: process.env.facebookID || secrets.clientID,
+        clientSecret: process.env.facebookSecret || secrets.clientSecret,
+        callbackURL: process.env.facebookCallback || ("http://localhost:" + port + "/auth/facebook/callback")
     }, function(accessToken, refreshToken, profile, done) {
         schema.Person.findOne({
             password: profile.id
