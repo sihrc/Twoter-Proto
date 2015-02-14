@@ -7,6 +7,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
+var passport = require('passport');
+var auth = require('./authentication.js');
+var flash = require('connect-flash');
 var hbs = exphbs.create({
       defaultLayout: 'base'
     , partialsDir: __dirname + '/views/partials'
@@ -24,6 +27,13 @@ var hbs = exphbs.create({
         }
     }
 });
+
+
+// Passport Configuration
+passport.serializeUser(auth.serialize);
+passport.deserializeUser(auth.deserialize);
+// Local Strategy
+passport.use(auth.local);
 
 // Route Imports
 var base = require('./routes/base');
@@ -49,13 +59,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 
 // Routing Table
 app.get('/', base.home);
+app.get('/login', base.login);
 app.get('/delete', base.delete_);
 
 // POSTS
-app.post('/login', base.login);
+// app.post('/login', base.login);
+app.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login',
+        failureFlash: true
+    })
+);
 app.post('/logout', base.logout);
 app.post('/addTwote', base.addTwote);
 app.post('/deleteTwote', base.deleteTwote);

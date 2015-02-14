@@ -1,4 +1,4 @@
-var schema = require('../models/schema')
+var schema = require('../models/schema');
 
 /** Helper to get Timestamp **/
 var getTime = function () {
@@ -19,6 +19,16 @@ var home = function (req, res) {
             res.status(500).json({error: "Could not load users. \n" + err1})
             return;
         }
+
+        if (!req.user) {
+            var pageData = {
+                  people: people_
+                , twotes: []
+                , message: "Please log in to see twotes"
+                , author: req.user.username
+            };
+            res.render('login', pageData);
+        }
         schema.Twote.find({}, null, {sort: {timestamp: -1}}, function (err2, twotes_) {
             if (err2) {
                 res.status(500).json({error: "Could not load twotes. \n" + err2})
@@ -28,8 +38,7 @@ var home = function (req, res) {
                   people: people_
                 , twotes: twotes_
                 , message: req.body.message
-                , author: req.session.username
-                , id: req.session.user
+                , author: req.user.username
             };
 
             res.render('index', pageData);
@@ -37,24 +46,14 @@ var home = function (req, res) {
     });
 };
 
-// POSTS
-
 var login = function (req, res) {
-    schema.Person.find({name: req.body.username}, function (err, exist) {
-        if (err || exist.length) {
-            res.render('login', {message: err ? err : "Name already exists!"});
-        } else {
-            schema.Person({name: req.body.username}).save(function (err, data) {
-                req.session.user = data._id;
-                req.session.username = req.body.username ? req.body.username : "NewUser";
-                res.redirect("/");
-            });
-        }
-    });
+    res.render('login', {message: req.flash().error});
 };
 
+// POSTS
+
 var logout = function (req, res) {
-    req.session.destroy();
+    req.logout(); // passport logout
     res.status(200).json({logout: true});
 }
 
@@ -70,8 +69,7 @@ var addTwote = function (req, res) {
     schema.Twote({
           timestamp: new Date().getTime()
         , displayTime: getTime()
-        , author: req.session.username
-        , authorId: req.session.user
+        , author: req.user.username
         , message: req.body.message
     }).save(function (err, data) {
         if (err) {
@@ -97,7 +95,8 @@ var deleteTwote = function (req, res) {
 /* Wraps the function in session checker */
 var sessionWrapper = function (func) {
     return function (req, res) {
-        if (req.session.username && req.session.user) {
+        console.log(req.session);
+        if (req.user) {
             req.session.counter++;
             req.body.message = "Hello again! Thanks for visiting " + req.session.counter + " times";
         } else {
