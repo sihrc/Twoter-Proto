@@ -24,7 +24,6 @@ var home = function (req, res) {
             var pageData = {
                   people: people_
                 , twotes: []
-                , message: "Please log in to see twotes"
                 , author: req.user.username
             };
             res.render('login', pageData);
@@ -37,7 +36,6 @@ var home = function (req, res) {
             var pageData = {
                   people: people_
                 , twotes: twotes_
-                , message: req.body.message
                 , author: req.user.username
             };
 

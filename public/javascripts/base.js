@@ -19,7 +19,7 @@ $("form#addTwote").submit(function (event) {
     $.post("/addTwote", {
         message: $input.val()
     }).done(function (data) {
-        var $existing = $('div.' + data.authorId);
+        var $existing = $('div.' + data.author);
         var add_ = data.author + " @ " + data.displayTime + "<br>&nbsp;&nbsp;" + data.message + '<br><br> <button class = "deleteTwote" id = ' + data._id + '> Delete </button>';
         var classes = data.authorId;
         if ($existing.length) {
